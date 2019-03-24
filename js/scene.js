@@ -46,9 +46,9 @@ export async function initScene() {
     false,
   );
 
-  document.addEventListener('mousedown', () =>
-    document.documentElement.requestFullscreen(),
-  );
+  document.addEventListener('mousedown', () => {
+    // document.documentElement.requestFullscreen(),
+  });
   document.addEventListener('fullscreenchange', () => {
     if (document.fullscreenElement != null) {
       screen.orientation.lock('natural');

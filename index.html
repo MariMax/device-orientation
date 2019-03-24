@@ -25,16 +25,22 @@
     <script src="js/three.min.js" defer></script>
     <script src="js/OBJLoader.js" defer></script>
     <script src="js/MTLLoader.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-app.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-auth.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-firestore.js" defer></script>
 
     <script type="module">
+
       import {initScene} from './js/scene.js';
       import {initSensors} from './js/sensors.js';
+      import {initFirebase} from './js/firebase.js';
       //   const params = new URLSearchParams(
       //     new URL(window.location.href).search.slice(1),
       //   );
       //   const relative = !!Number(params.get('relative'));
       //   const coordinateSystem = params.get('coord');
       async function app() {
+        initFirebase();
         const {model, scene, camera, renderer} = await initScene();
         renderScene(scene, camera);
 
@@ -45,16 +51,10 @@
         }
 
         initSensors(model, '', false);
-
-        //   let log = console.log;
-        //   console.log = (message, ...rest) => {
-        //     const div = document.querySelector('#console');
-        //     div.innerText = message;
-        //     log.call(console, message, ...rest);
-        //   };
       }
       app();
     </script>
+    <div class="header"><button class="login">Log In</button></div>
     <div id="console"></div>
   </body>
 </html>
