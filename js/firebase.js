@@ -25,6 +25,10 @@ export class FirestoreHandler {
     this.docRef = firestore.collection('pointers').doc();
   }
 
+  get docId() {
+    return this.docRef.getId();
+  }
+
   pushData(data) {
     this.docRef.update({
       direction: data,

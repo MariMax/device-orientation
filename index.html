@@ -17,6 +17,17 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: -1;
+      }
+      #qr {
+        z-index: 0;
+        width: 100vw;
+        height: 100vh;
+        opacity: 0;
+      }
+
+      .active {
+        opacity: 1;
       }
     </style>
   </head>
@@ -33,7 +44,7 @@
 
       import {initScene} from './js/scene.js';
       import {initSensors} from './js/sensors.js';
-      import {initFirebase} from './js/firebase.js';
+      import {initFirebase, FirestoreHandler} from './js/firebase.js';
       //   const params = new URLSearchParams(
       //     new URL(window.location.href).search.slice(1),
       //   );
@@ -42,6 +53,8 @@
       async function app() {
         initFirebase();
         const {model, scene, camera, renderer} = await initScene();
+        const firestoreHandler = new FirestoreHandler();
+
         renderScene(scene, camera);
 
         function renderScene(scene, camera) {
@@ -50,7 +63,10 @@
           renderer.render(scene, camera);
         }
 
-        initSensors(model, '', false);
+        const modelUpdateSubscr = initSensors('', false, (data) => {
+          model.quaternion.fromArray(data).inverse();
+          firestoreHandler.pushData(data);
+        });        
       }
       app();
     </script>
