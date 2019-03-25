@@ -2,7 +2,7 @@ const subscriptions = [];
 let initialized = false;
 
 export function initSensors(coordinateSystem, isRelative, fn) {
-  if (initSensors) {
+  if (initialized) {
     subscriptions.push(fn);
     return {
       unsubscribe: () => (subscriptions = subscriptions.filter(i => i !== fn)),
@@ -40,14 +40,13 @@ export function initSensors(coordinateSystem, isRelative, fn) {
 }
 
 function initSensor(coordinateSystem, isRelative) {
+  console.log('test');
   const options = {frequency: 60, coordinateSystem};
   // console.log(JSON.stringify(options));
   const sensor = isRelative
     ? new RelativeOrientationSensor(options)
     : new AbsoluteOrientationSensor(options);
   sensor.onreading = () => {
-    // const values = sensor.quaternion;
-    // model.quaternion.fromArray(values).inverse();
     subscriptions.forEach(i => {
       i(sensor.quaternion);
     });

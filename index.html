@@ -11,6 +11,7 @@
       body {
         margin: 0px;
         overflow: hidden;
+        position: relative;
       }
       #console {
         margin: 20px;
@@ -20,15 +21,34 @@
         z-index: -1;
       }
       #qr {
+        z-index: 1;
+        max-width: 100vw;
+        max-height: 100vh;
+        opacity: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+      }
+      .active {
+        opacity: 1 !important;
+      }
+
+      .overlay {
         z-index: 0;
+        background: white;
+        position: absolute;
+        left: 0;
+        top: 0;
         width: 100vw;
         height: 100vh;
         opacity: 0;
       }
-
-      .active {
+      .active + .overlay {
         opacity: 1;
-      }
+      }      
+
     </style>
   </head>
 
@@ -41,33 +61,7 @@
     <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-firestore.js" defer></script>
 
     <script type="module">
-
-      import {initScene} from './js/scene.js';
-      import {initSensors} from './js/sensors.js';
-      import {initFirebase, FirestoreHandler} from './js/firebase.js';
-      //   const params = new URLSearchParams(
-      //     new URL(window.location.href).search.slice(1),
-      //   );
-      //   const relative = !!Number(params.get('relative'));
-      //   const coordinateSystem = params.get('coord');
-      async function app() {
-        initFirebase();
-        const {model, scene, camera, renderer} = await initScene();
-        const firestoreHandler = new FirestoreHandler();
-
-        renderScene(scene, camera);
-
-        function renderScene(scene, camera) {
-          requestAnimationFrame(() => renderScene(scene, camera));
-          camera.lookAt(scene.position);
-          renderer.render(scene, camera);
-        }
-
-        const modelUpdateSubscr = initSensors('', false, (data) => {
-          model.quaternion.fromArray(data).inverse();
-          firestoreHandler.pushData(data);
-        });        
-      }
+      import {app} from './js/app.js';
       app();
     </script>
     <div class="header"><button class="login">Log In</button></div>

@@ -22,16 +22,16 @@ export function initFirebase() {
 export class FirestoreHandler {
   constructor() {
     this.firestore = firebase.firestore();
-    this.docRef = firestore.collection('pointers').doc();
+    this.docRef = this.firestore.collection('pointers').doc();
   }
 
   get docId() {
-    return this.docRef.getId();
+    return this.docRef.id;
   }
 
   pushData(data) {
-    this.docRef.update({
+    this.docRef.set({
       direction: data,
-    });
+    }, {merge: true});
   }
 }
