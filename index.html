@@ -12,6 +12,7 @@
         margin: 0px;
         overflow: hidden;
         position: relative;
+        height: 100vh;
       }
       #console {
         margin: 20px;
@@ -35,7 +36,7 @@
         opacity: 1 !important;
       }
 
-      .overlay {
+      .overlay, .header {
         z-index: 0;
         background: white;
         position: absolute;
@@ -45,9 +46,16 @@
         height: 100vh;
         opacity: 0;
       }
-      .active + .overlay {
+      .active + .overlay,
+      .header.active {
         opacity: 1;
-      }      
+      }  
+
+      .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
     </style>
   </head>
@@ -64,7 +72,7 @@
       import {app} from './js/app.js';
       app();
     </script>
-    <div class="header"><button class="login">Log In</button></div>
+    <div class="header active"><button class="login">Log In</button></div>
     <div id="console"></div>
   </body>
 </html>

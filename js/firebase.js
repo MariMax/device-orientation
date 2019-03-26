@@ -5,33 +5,60 @@ var config = {
 };
 firebase.initializeApp(config);
 
-export function initFirebase() {
+export async function initFirebase() {
   const auth = firebase.auth();
   const provider = new firebase.auth.GoogleAuthProvider();
-
   const loginBtn = document.querySelector('.login');
-
   loginBtn.addEventListener('click', async () => {
     const result = await auth.signInWithPopup(provider);
     // const token = result.credential.accessToken;
     // const user = result.user;
     // console.log(result);
   });
-}
 
+  return new Promise(resolve => {
+    if (!auth.currentUser) {
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          resolve(true);
+        }
+      });
+    } else {
+      resolve(true);
+    }
+  });
+}
 export class FirestoreHandler {
   constructor() {
+    this.readyState = new Promise(resolve => {
+      this.readyStateTrigger = resolve;
+    });
     this.firestore = firebase.firestore();
     this.docRef = this.firestore.collection('pointers').doc();
+    this.docRef.set({
+      ready: false,
+    });
+    this.docRef.onSnapshot({includeMetadataChanges: true}, doc => {
+      if (!doc.metadata.hasPendingWrites && doc.data().ready === true) {
+        this.readyStateTrigger();
+      }
+    });
   }
 
   get docId() {
     return this.docRef.id;
   }
 
+  get whenQRScanned() {
+    return this.readyState;
+  }
+
   pushData(data) {
-    this.docRef.set({
-      direction: data,
-    }, {merge: true});
+    this.docRef.set(
+      {
+        direction: data,
+      },
+      {merge: true},
+    );
   }
 }

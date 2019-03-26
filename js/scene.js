@@ -56,3 +56,15 @@ export async function initScene() {
   });
   return {camera, model, scene, renderer};
 }
+
+function renderScene(scene, camera, renderer) {
+  requestAnimationFrame(() => renderScene(scene, camera, renderer));
+  camera.lookAt(scene.position);
+  renderer.render(scene, camera);
+}
+
+export async function startRender() {
+  const {model, scene, camera, renderer} = await initScene();
+  renderScene(scene, camera, renderer);
+  return model;
+}

@@ -1,25 +1,22 @@
-import {initScene} from './scene.js';
+import {startRender} from './scene.js';
 import {initSensors} from './sensors.js';
 import {initFirebase, FirestoreHandler} from './firebase.js';
-import {addDrawQR} from './qr-generator.js';
+import {addDrawQR, removeQR} from './qr-generator.js';
 
 export async function app() {
-  initFirebase();
-  const {model, scene, camera, renderer} = await initScene();
+  await initFirebase();
+  const loginBtn = document.querySelector('.header');
+  loginBtn.classList.remove('active');
+
   const firestoreHandler = new FirestoreHandler();
+  await addDrawQR(firestoreHandler.docId);
+  await firestoreHandler.whenQRScanned;
+  removeQR();
 
-  renderScene(scene, camera);
+  const model = await startRender();
 
-  function renderScene(scene, camera) {
-    requestAnimationFrame(() => renderScene(scene, camera));
-    camera.lookAt(scene.position);
-    renderer.render(scene, camera);
-  }
-
-  const modelUpdateSubscr = initSensors('', true, data => {
+  initSensors('', true, data => {
     model.quaternion.fromArray(data).inverse();
     firestoreHandler.pushData(data);
   });
-
-  addDrawQR(firestoreHandler.docId);
 }
