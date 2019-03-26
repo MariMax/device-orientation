@@ -1,6 +1,7 @@
 var config = {
   apiKey: 'AIzaSyClFwU1pu2A4YVWSllCx3PP1CMS98z3wKU',
   authDomain: 'web-ar-e1c34.firebaseapp.com',
+  databaseURL: 'https://web-ar-e1c34.firebaseio.com',
   projectId: 'web-ar-e1c34',
 };
 firebase.initializeApp(config);
@@ -28,25 +29,27 @@ export async function initFirebase() {
     }
   });
 }
-export class FirestoreHandler {
+export class FirebaseHandler {
   constructor() {
     this.readyState = new Promise(resolve => {
       this.readyStateTrigger = resolve;
     });
-    this.firestore = firebase.firestore();
-    this.docRef = this.firestore.collection('pointers').doc();
+    this.firebase = firebase.database().ref(`pointers`);
+    const userId = firebase.auth().currentUser.uid;
+    this.docRef = this.firebase.child(userId);
     this.docRef.set({
       ready: false,
     });
-    this.docRef.onSnapshot({includeMetadataChanges: true}, doc => {
-      if (!doc.metadata.hasPendingWrites && doc.data().ready === true) {
+    this.docRef.on('value', snapshot => {
+      if (snapshot.val() && snapshot.val().ready === true) {
         this.readyStateTrigger();
+        this.docRef.off();
       }
     });
   }
 
   get docId() {
-    return this.docRef.id;
+    return this.docRef.key;
   }
 
   get whenQRScanned() {
@@ -54,11 +57,8 @@ export class FirestoreHandler {
   }
 
   pushData(data) {
-    this.docRef.set(
-      {
-        direction: data,
-      },
-      {merge: true},
-    );
+    this.docRef.update({
+      direction: data,
+    });
   }
 }

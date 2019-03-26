@@ -1,6 +1,6 @@
 import {startRender} from './scene.js';
 import {initSensors} from './sensors.js';
-import {initFirebase, FirestoreHandler} from './firebase.js';
+import {initFirebase, FirebaseHandler} from './firebase.js';
 import {addDrawQR, removeQR} from './qr-generator.js';
 
 export async function app() {
@@ -8,15 +8,17 @@ export async function app() {
   const loginBtn = document.querySelector('.header');
   loginBtn.classList.remove('active');
 
-  const firestoreHandler = new FirestoreHandler();
-  await addDrawQR(firestoreHandler.docId);
-  await firestoreHandler.whenQRScanned;
+  const firebaseHandler = new FirebaseHandler();
+  console.log(firebaseHandler.docId);
+  await addDrawQR(firebaseHandler.docId);
+  await firebaseHandler.whenQRScanned;
   removeQR();
 
   const model = await startRender();
 
-  initSensors('', true, data => {
-    model.quaternion.fromArray(data).inverse();
-    firestoreHandler.pushData(data);
+  // 'device' https://developer.mozilla.org/en-US/docs/Web/API/AbsoluteOrientationSensor/AbsoluteOrientationSensor#Parameters
+  initSensors('screen', true, data => {
+    model.quaternion.fromArray(data);//.inverse();
+    firebaseHandler.pushData(data);
   });
 }

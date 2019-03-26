@@ -39,10 +39,8 @@ export function initSensors(coordinateSystem, isRelative, fn) {
   };
 }
 
-function initSensor(coordinateSystem, isRelative) {
-  console.log('test');
-  const options = {frequency: 60, coordinateSystem};
-  // console.log(JSON.stringify(options));
+function initSensor(referenceFrame, isRelative) {
+  const options = {frequency: 4, referenceFrame};
   const sensor = isRelative
     ? new RelativeOrientationSensor(options)
     : new AbsoluteOrientationSensor(options);
